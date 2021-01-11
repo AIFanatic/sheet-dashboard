@@ -63,10 +63,10 @@ export class ActionMenu extends React.Component<IProps> {
 
             client.publish(channel, message.toString(), {retain: true});
 
+            client.end();
+
             const keyFormatted = key.substr(0,3) + '-' + key.substr(3, 3) + "-" + key.substr(6, 3);
             alert(`Uploaded workbook. The key is ${keyFormatted}`);
-
-            client.end();
         });
     }
 
