@@ -30,7 +30,6 @@ class Luckysheet extends React.Component {
     }
 
     buildLuckysheet() {
-        console.log(this.props)
         let options = {};
 
         const data = this.props.data;
@@ -91,7 +90,6 @@ class Luckysheet extends React.Component {
                 }
             },
             updated: () => {
-                console.log("updated")
                 this.props.saveData(luckysheet.getAllSheets());
             },
         }
@@ -103,8 +101,6 @@ class Luckysheet extends React.Component {
     }
 
     componentDidUpdate() {
-        console.log("componentDidUpdate")
-
         this.buildLuckysheet();
     }
 
@@ -113,7 +109,6 @@ class Luckysheet extends React.Component {
     }
 
     render() {
-        console.log("rendering")
         const luckyCss = {
             margin: '0px',
             padding: '0px',

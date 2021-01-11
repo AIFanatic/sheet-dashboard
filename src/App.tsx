@@ -20,7 +20,7 @@ function App() {
             }
         }
 
-        return defaultWorkbook
+        return defaultWorkbook;
     }
 
     function saveData(_data: any, refresh: boolean = false) {
