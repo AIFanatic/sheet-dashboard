@@ -11,12 +11,14 @@ import '../styles/actionmenu.css';
 
 import { FiSettings } from 'react-icons/fi';
 
-import * as mqtt from 'paho-mqtt';
+// import * as mqtt from 'paho-mqtt';
 
 import AES from 'crypto-js/aes';
 import SHA256 from 'crypto-js/sha256';
 import random from 'crypto-js/lib-typedarrays'
 import Utf8 from 'crypto-js/enc-utf8';
+
+import * as mqtt from 'mqtt'
 
 interface IProps {
     editMode: boolean;
@@ -26,8 +28,7 @@ interface IProps {
 }
 
 export class ActionMenu extends React.Component<IProps> {
-    private broker: string = "wss://broker.emqx.io:8084/mqtt";
-    private clientId: string = "client-" + Math.random().toFixed(5);
+    private broker: string = "wss://test.mosquitto.org:8081";
 
     constructor(props: IProps) {
         super(props);
@@ -50,29 +51,22 @@ export class ActionMenu extends React.Component<IProps> {
     }
 
     handleUploadClick() {
-        const key = this.createKey();
-        const channel = key + "-channel";
-        console.log(channel)
+        const client  = mqtt.connect(this.broker)
 
-        const dataString = JSON.stringify(this.props.getData());
+        client.on('connect', () => {
+            const key = this.createKey();
+            const channel = key + "-channel";
 
-        const message = AES.encrypt(dataString, key);
+            const dataString = JSON.stringify(this.props.getData());
 
-        const mqttMessage = new mqtt.Message(message.toString());
-        mqttMessage.destinationName = channel;
-        mqttMessage.retained = true;
+            const message = AES.encrypt(dataString, key);
 
-        const client = new mqtt.Client(this.broker, this.clientId);
+            client.publish(channel, message.toString(), {retain: true});
 
-        client.connect({
-            onSuccess: (event) => {
-                client.send(mqttMessage);
+            const keyFormatted = key.substr(0,3) + '-' + key.substr(3, 3) + "-" + key.substr(6, 3);
+            alert(`Uploaded workbook. The key is ${keyFormatted}`);
 
-                const keyFormatted = key.substr(0,3) + '-' + key.substr(3, 3) + "-" + key.substr(6, 3);
-                alert(`Uploaded workbook. The key is ${keyFormatted}`);
-
-                client.disconnect();
-            }
+            client.end();
         });
     }
 
@@ -81,18 +75,27 @@ export class ActionMenu extends React.Component<IProps> {
         const key = keyPrompt.replaceAll("-", "");
         const channel = key + "-channel";
 
-        const client = new mqtt.Client(this.broker, this.clientId);
-        
-        client.onMessageArrived = (message: mqtt.Message) => {
+        const client  = mqtt.connect(this.broker)
+
+        client.on('connect', () => {
+            client.subscribe(channel, function (err) {
+                if (err) {
+                    alert("Unable to connect to MQTT channel");
+                    console.error(err);
+                    return;
+                }
+            })
+        })
+
+        client.on('message', (topic, message) => {
+            console.log(message.toString())
+
             try {
-                const data = AES.decrypt(message.payloadString, key);
+                const data = AES.decrypt(message.toString(), key);
                 const json = JSON.parse(data.toString(Utf8));
 
                 // Delete retained message
-                const mqttMessage = new mqtt.Message("");
-                mqttMessage.destinationName = channel;
-                mqttMessage.retained = true;
-                client.send(mqttMessage);
+                client.publish(channel, "", {retain: true});
 
                 this.props.saveData(json, true);
 
@@ -100,20 +103,8 @@ export class ActionMenu extends React.Component<IProps> {
                 alert("Invalid key provided, please try again.");
             }
 
-            client.disconnect();
-        };
-    
-        client.connect({
-            onSuccess: (event) => {
-                console.log("connected")
-                client.subscribe(channel);
-
-                setTimeout(() => {
-                    alert("No data is available for download, try uploading again.");
-                    client.disconnect();
-                }, 5000);
-            }
-        });
+            client.end();
+        })
     }
 
     handlRefreshClick() {
