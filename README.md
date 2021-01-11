@@ -1,25 +1,24 @@
-# luckysheet-react
+# Sheet-Dashboard
+A client side dashboard using sheets/excel
 
-## Introduction
-This is a simple project that shows the use of luckysheet in a React project
+## Features
+* Google sheets/Excel interface (powered by luckysheet)
+* Ability to pull data from API's using `=JSON(url, jsonPath)`
+* Sync across devices (using a public MQTT broker)
 
 ## Project setup
 
 ### Installation
 
-`npm install`
+`yarn install`
 
 ### Development
 
-`npm start`
+`yarn start`
 
 ### Production
 
-`npm run build`
-
-## Resources
-- [Luckysheet](https://github.com/mengshukeji/Luckysheet)
-- [Create React App](https://facebook.github.io/create-react-app/docs/getting-started)
+`yarn build`
 
 ## License
 [MIT](http://opensource.org/licenses/MIT)
