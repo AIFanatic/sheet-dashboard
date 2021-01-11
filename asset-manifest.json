@@ -1,0 +1,23 @@
+{
+  "files": {
+    "main.css": "/sheet-dashboard/static/css/main.443cee48.chunk.css",
+    "main.js": "/sheet-dashboard/static/js/main.ae57e9e9.chunk.js",
+    "main.js.map": "/sheet-dashboard/static/js/main.ae57e9e9.chunk.js.map",
+    "runtime-main.js": "/sheet-dashboard/static/js/runtime-main.7b8aa829.js",
+    "runtime-main.js.map": "/sheet-dashboard/static/js/runtime-main.7b8aa829.js.map",
+    "static/css/2.0754e599.chunk.css": "/sheet-dashboard/static/css/2.0754e599.chunk.css",
+    "static/js/2.395313ac.chunk.js": "/sheet-dashboard/static/js/2.395313ac.chunk.js",
+    "static/js/2.395313ac.chunk.js.map": "/sheet-dashboard/static/js/2.395313ac.chunk.js.map",
+    "index.html": "/sheet-dashboard/index.html",
+    "static/css/2.0754e599.chunk.css.map": "/sheet-dashboard/static/css/2.0754e599.chunk.css.map",
+    "static/css/main.443cee48.chunk.css.map": "/sheet-dashboard/static/css/main.443cee48.chunk.css.map",
+    "static/js/2.395313ac.chunk.js.LICENSE.txt": "/sheet-dashboard/static/js/2.395313ac.chunk.js.LICENSE.txt"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.7b8aa829.js",
+    "static/css/2.0754e599.chunk.css",
+    "static/js/2.395313ac.chunk.js",
+    "static/css/main.443cee48.chunk.css",
+    "static/js/main.ae57e9e9.chunk.js"
+  ]
+}
