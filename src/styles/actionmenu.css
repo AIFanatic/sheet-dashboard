@@ -1,0 +1,14 @@
+.rc-menu-button {
+    background-color: transparent;
+    border: none;
+    position: absolute;
+    bottom: 0px;
+    right: 5px;
+    line-height: 12px;
+    font-size: 17px;
+    outline: none;
+}
+
+.rc-menu {
+    z-index: 10000;
+}

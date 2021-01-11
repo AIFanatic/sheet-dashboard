@@ -1,0 +1,90 @@
+#luckysheet {
+    overflow: hidden;
+}
+
+.luckysheet {
+    height: 100% !important;
+    width: 100% !important;
+    border: none;
+    background: transparent !important;
+}
+
+/* .liveMode {
+    background-color: black;
+} */
+
+.luckysheet-stat-area {
+    display: none !important;
+}
+
+.liveMode .luckysheet-sheets-item-menu {
+    display: none;
+}
+
+.liveMode .luckysheet-sheets-add {
+    display: none;
+}
+
+.liveMode #luckysheet-scrollbar-x {
+    height: 0px !important;
+}
+
+.liveMode #luckysheet-scrollbar-y {
+    width: 0px !important;
+}
+
+.liveMode .luckysheet-cell-main {
+    pointer-events: none;
+
+    background-color: transparent !important;
+}
+
+.luckysheet-cols-h-c {
+	background: transparent !important;
+}
+
+.luckysheet-rows-h {
+	background: transparent !important;
+}
+
+
+.liveMode .luckysheet-sheets-item-menu {
+    display: none !important;
+}
+
+.liveMode .luckysheet-sheets-item-active {
+    pointer-events: none;
+}
+
+.liveMode .luckysheet-cell-selected {
+    display: none !important;
+}
+
+.liveMode .luckysheet-cell-selected-focus {
+    display: none !important;
+}
+
+.liveMode .luckysheet-count-show {
+    display: none !important;
+}
+
+.liveMode .luckysheet-grid-window-1 {
+    background-color: transparent !important;
+}
+
+.liveMode .luckysheet-sheet-area {
+    background-color: transparent !important;
+}
+
+.liveMode #luckysheet-copy-btn {
+    display: none;
+}
+
+/* .jfk-tooltip {
+    display: none !important;
+} */
+
+.luckysheet-grid-window {
+    bottom: 0px !important;
+    background-color: transparent !important;
+}
