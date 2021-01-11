@@ -26,7 +26,7 @@ interface IProps {
 }
 
 export class ActionMenu extends React.Component<IProps> {
-    private broker: string = "ws://broker.mqttdashboard.com:8000/mqtt";
+    private broker: string = "wss://broker.emqx.io:8084/mqtt";
     private clientId: string = "client-" + Math.random().toFixed(5);
 
     constructor(props: IProps) {
