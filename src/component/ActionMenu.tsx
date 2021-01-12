@@ -9,7 +9,7 @@ import '@szhsin/react-menu/dist/index.css';
 
 import '../styles/actionmenu.css';
 
-import { FiSettings } from 'react-icons/fi';
+import { FiSettings, FiCopy } from 'react-icons/fi';
 
 // import * as mqtt from 'paho-mqtt';
 
@@ -18,7 +18,14 @@ import SHA256 from 'crypto-js/sha256';
 import random from 'crypto-js/lib-typedarrays'
 import Utf8 from 'crypto-js/enc-utf8';
 
-import * as mqtt from 'mqtt'
+// import * as mqtt from 'mqtt'
+import Peer from 'peerjs';
+
+import { toast } from 'react-toastify';
+
+import '../styles/alert.css';
+
+import copy from 'copy-to-clipboard';
 
 interface IProps {
     editMode: boolean;
@@ -27,8 +34,39 @@ interface IProps {
     getData: Function;
 }
 
-export class ActionMenu extends React.Component<IProps> {
+interface IState {
+    isAlertOpen: boolean;
+}
+
+function uploadAlertTemplate(key: string) {
+    const keyFormatted = key.substr(0,3) + '-' + key.substr(3, 3) + "-" + key.substr(6, 3);
+
+    return (
+        <div className="alert">
+            <span className="title"> <span className="title-icon">🛈</span> Ready to upload workbook.</span>
+            <p className="text">Download using the following key</p>
+            <p className="button-box">
+                <button onClick={() => {
+                    copy(keyFormatted);
+                    toast("Copied to clipboard!", {
+                        autoClose: 2000,
+                        type: "success"
+                    });
+                }}>
+                        {keyFormatted}
+                        <FiCopy className="button-icon"/>
+                </button>
+            </p>
+        </div>
+    )
+}
+
+export class ActionMenu extends React.Component<IProps, IState> {
     private broker: string = "wss://test.mosquitto.org:8081";
+
+    state: IState = {
+        isAlertOpen: true,
+    };
 
     constructor(props: IProps) {
         super(props);
@@ -50,61 +88,54 @@ export class ActionMenu extends React.Component<IProps> {
         }
     }
 
+    createChannelFromKey(key: string): string {
+        const sha256 = SHA256(key).toString();
+        const channel = sha256.slice(0, 9)
+        return channel;
+    }
+
     handleUploadClick() {
-        const client  = mqtt.connect(this.broker)
+        const key = this.createKey();
+        const channel = this.createChannelFromKey(key);
 
-        client.on('connect', () => {
-            const key = this.createKey();
-            const channel = key + "-channel";
+        var peer = new Peer("sheet-dashboard-sender-" + channel);
 
-            const dataString = JSON.stringify(this.props.getData());
+        peer.on('open', (id) => {
+            peer.on('connection', (conn) => {
+                conn.on('open', () => {
+                    const dataString = JSON.stringify(this.props.getData());
+                    const message = AES.encrypt(dataString, key);
 
-            const message = AES.encrypt(dataString, key);
-
-            client.publish(channel, message.toString(), {retain: true});
-
-            client.end();
+                    conn.send(message.toString());
+                });
+            });
 
             const keyFormatted = key.substr(0,3) + '-' + key.substr(3, 3) + "-" + key.substr(6, 3);
-            alert(`Uploaded workbook. The key is ${keyFormatted}`);
+            // toast(`Uploaded workbook. <p>The key is ${keyFormatted}</p>`);
+            toast(uploadAlertTemplate(key));
         });
     }
 
     handleDownloadClick() {
         const keyPrompt: string = prompt("Please enter the 9 character key:") as string;
         const key = keyPrompt.replaceAll("-", "");
-        const channel = key + "-channel";
+        const channel = this.createChannelFromKey(key);
 
-        const client  = mqtt.connect(this.broker)
+        var peer = new Peer("sheet-dashboard-receiver-" + channel);
 
-        client.on('connect', () => {
-            client.subscribe(channel, function (err) {
-                if (err) {
-                    alert("Unable to connect to MQTT channel");
-                    console.error(err);
-                    return;
-                }
-            })
-        })
+        peer.on('open', (id) => {
+            var conn = peer.connect("sheet-dashboard-sender-" + channel);
 
-        client.on('message', (topic, message) => {
-            console.log(message.toString())
+            conn.on('open', () => {
+                // Receive messages
+                conn.on('data', (data) => {
+                    const dataDecrypted = AES.decrypt(data.toString(), key);
+                    const json = JSON.parse(dataDecrypted.toString(Utf8));
 
-            try {
-                const data = AES.decrypt(message.toString(), key);
-                const json = JSON.parse(data.toString(Utf8));
-
-                // Delete retained message
-                client.publish(channel, "", {retain: true});
-
-                this.props.saveData(json, true);
-
-            } catch (error) {
-                alert("Invalid key provided, please try again.");
-            }
-
-            client.end();
-        })
+                    this.props.saveData(json, true);
+                });
+            });
+        });
     }
 
     handlRefreshClick() {
@@ -119,15 +150,17 @@ export class ActionMenu extends React.Component<IProps> {
     render() {
         const headerTitle = this.props.editMode ? "Live Mode" : "Edit Mode";
         return (
-            <Menu menuButton={<MenuButton><FiSettings /></MenuButton>}>
-                <MenuItem onClick={() => {this.handleHeaderClick()}}>{headerTitle}</MenuItem>
-                <MenuDivider />
-                <MenuItem onClick={() => {this.handleUploadClick()}}>Upload</MenuItem>
-                <MenuItem onClick={() => {this.handleDownloadClick()}}>Download</MenuItem>
-                <MenuItem onClick={() => {this.handlRefreshClick()}}>Refresh</MenuItem>
-                <MenuDivider />
-                <MenuItem styles={{color: "red"}} onClick={() => {this.handleDeleteClick()}}>Delete data</MenuItem>
-            </Menu>
+            <div>
+                <Menu menuButton={<MenuButton><FiSettings /></MenuButton>}>
+                    <MenuItem onClick={() => {this.handleHeaderClick()}}>{headerTitle}</MenuItem>
+                    <MenuDivider />
+                    <MenuItem onClick={() => {this.handleUploadClick()}}>Upload</MenuItem>
+                    <MenuItem onClick={() => {this.handleDownloadClick()}}>Download</MenuItem>
+                    <MenuItem onClick={() => {this.handlRefreshClick()}}>Refresh</MenuItem>
+                    <MenuDivider />
+                    <MenuItem styles={{color: "red"}} onClick={() => {this.handleDeleteClick()}}>Delete data</MenuItem>
+                </Menu>
+            </div>
         )
     }
 }

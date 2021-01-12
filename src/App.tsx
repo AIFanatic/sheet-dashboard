@@ -3,6 +3,9 @@ import './App.css';
 import Luckysheet from './component/Luckysheet'
 import { ActionMenu } from './component/ActionMenu';
 
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 const defaultWorkbook = [{ "name": "Sheet1", color: "", "status": "1", "order": "0", "data": [], "config": {}, "index":0, "visibledatarow": [[],[],[]], "visibledatacolumn": [[],[],[]] }];
 
 function App() {
@@ -43,6 +46,15 @@ function App() {
 
     return (
         <div className="App">
+            <ToastContainer
+                position="bottom-center"
+                autoClose={false}
+                newestOnTop
+                closeOnClick={false}
+                // rtl={false}
+                pauseOnFocusLoss={false}
+                draggable={false}
+            />
             <Luckysheet data={data} editMode={editMode} saveData={saveData}/>
             <ActionMenu editMode={editMode} setEditMode={setMode} saveData={saveData} getData={getData}/>
         </div>

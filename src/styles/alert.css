@@ -1,0 +1,51 @@
+.alert {
+    color: black;
+}
+
+.Toastify__toast--success {
+    background: #dbffdb !important;
+    color: black;
+    text-align: center;
+}
+
+.alert .title {
+    font-weight: 700;
+    font-size: 16px;
+    margin-top: 0;
+}
+
+.alert .title-icon {
+    font-weight: initial;
+    color: #3498db;
+}
+
+.alert .text {
+    text-align: center;;
+    font-size: 14px;
+}
+
+.alert .button-box {
+    text-align: center;
+}
+
+.alert button {
+    background-color: #ffffff;
+    border: 1px solid #ccc;
+    padding: 10px;
+    font-family: monospace;
+    font-size: 16px;
+    width: 190px;
+    border-radius: 5px;
+    outline: none;
+}
+
+.alert button:hover {
+    background-color: #dbffdb;
+    cursor: pointer;
+}
+
+.alert .button-icon {
+    position: absolute;
+    margin-left: 18px;
+    margin-top: 2px;
+}
