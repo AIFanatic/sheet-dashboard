@@ -11,14 +11,11 @@ import '../styles/actionmenu.css';
 
 import { FiSettings, FiCopy } from 'react-icons/fi';
 
-// import * as mqtt from 'paho-mqtt';
-
 import AES from 'crypto-js/aes';
 import SHA256 from 'crypto-js/sha256';
 import random from 'crypto-js/lib-typedarrays'
 import Utf8 from 'crypto-js/enc-utf8';
 
-// import * as mqtt from 'mqtt'
 import Peer from 'peerjs';
 
 import { toast } from 'react-toastify';
@@ -32,10 +29,6 @@ interface IProps {
     setEditMode: Function;
     saveData: Function;
     getData: Function;
-}
-
-interface IState {
-    isAlertOpen: boolean;
 }
 
 function uploadAlertTemplate(key: string) {
@@ -61,22 +54,22 @@ function uploadAlertTemplate(key: string) {
     )
 }
 
-export class ActionMenu extends React.Component<IProps, IState> {
-    private broker: string = "wss://test.mosquitto.org:8081";
-
-    state: IState = {
-        isAlertOpen: true,
-    };
-
+export class ActionMenu extends React.Component<IProps> {
     constructor(props: IProps) {
         super(props);
     }
 
-    private createKey() {
+    createKey() {
         const seed = random.random(16);
         const sha256 = SHA256(seed).toString();
         const key = sha256.slice(0, 9)
         return key;
+    }
+
+    createChannelFromKey(key: string): string {
+        const sha256 = SHA256(key).toString();
+        const channel = sha256.slice(0, 9)
+        return channel;
     }
 
     handleHeaderClick() {
@@ -86,12 +79,6 @@ export class ActionMenu extends React.Component<IProps, IState> {
         else {
             this.props.setEditMode(true);
         }
-    }
-
-    createChannelFromKey(key: string): string {
-        const sha256 = SHA256(key).toString();
-        const channel = sha256.slice(0, 9)
-        return channel;
     }
 
     handleUploadClick() {
